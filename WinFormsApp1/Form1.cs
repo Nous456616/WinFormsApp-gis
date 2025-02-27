@@ -7,7 +7,6 @@ using System.Drawing;
 using NetTopologySuite.Geometries;
 using System;
 using System.Windows.Forms;
-using DotSpatial.Topology;
 namespace WinFormsApp1
 {
     public partial class Form1 : Form
