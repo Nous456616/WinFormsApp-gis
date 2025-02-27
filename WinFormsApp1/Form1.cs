@@ -15,13 +15,15 @@ namespace WinFormsApp1
         private bool isAddingPoints = false;   // 是否处于添加点模式
         private Map map;
         private SaveFileDialog saveFileDialog = new SaveFileDialog();
+        
         public Form1()
         {
             InitializeComponent();
             InitializeMap();
             this.DoubleBuffered = true;
         }
-
+       
+  
         private void Form1_Load(object sender, EventArgs e)
         {
 
@@ -84,28 +86,66 @@ namespace WinFormsApp1
                 map.ResetBuffer();
             }
         }
-
+        private ColorScheme CreateGrayscaleScheme(double min, double max)
+        {
+            ColorScheme scheme = new ColorScheme();
+            scheme.AddCategory(new ColorCategory(min, max, Color.Black, Color.White));
+            return scheme;
+        }
         private void tiffToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog
             {
-                Filter = "TIFF文件 (*.tif)|*.tif"
+                Filter = "TIFF文件 (*.tif;*.tiff)|*.tif;*.tiff"
             };
 
             if (dialog.ShowDialog() == DialogResult.OK)
             {
-                IRaster raster = Raster.Open(dialog.FileName);
-                IMapRasterLayer layer = map.Layers.Add(raster);
-
-                // 设置颜色方案（示例：灰度渲染）
-                layer.Symbolizer = new RasterSymbolizer
+                try
                 {
+                    // 1. 加载栅格数据
+                    IRaster raster = Raster.Open(dialog.FileName);
+                    IMapRasterLayer layer = map.Layers.Add(raster);
 
-                };
+                    // 2. 计算统计信息（确保有最小值/最大值）
+                    if (double.IsNaN(raster.Minimum))
+                    {
+                        var raster = Raster.OpenFile(dialog.FileName);
+                        if (raster is Raster concreteRaster)
+                        {
+                            // 方法一：直接调用 Raster 类的计算方法
+                            concreteRaster.CalculateStatistics();
 
-                map.ResetBuffer();
+                            // 方法二：使用进度条（可选）
+                            //ProgressMeter pm = new ProgressMeter();
+                            //concreteRaster.CalculateStatistics(pm);
+                        }
+                    }
+
+                    // 3. 创建灰度颜色方案（新API方式）
+                    RasterSymbolizer symbolizer = new RasterSymbolizer();
+
+                    // 方法一：直接设置渐变颜色
+                   // symbolizer.ColorScheme = ColorScheme.Grayscale; // 使用内置灰度方案
+                    //symbolizer.ColorSchemeType = ColorSchemeType.Gradient;
+
+                    // 方法二：自定义颜色范围（如果没有内置Grayscale）
+                    symbolizer.ColorScheme = CreateGrayscaleScheme(raster.Minimum, raster.Maximum);
+
+                    // 4. 应用符号化
+                    layer.Symbolizer = symbolizer;
+
+                    // 5. 缩放并刷新
+                  
+                    map.ResetBuffer();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"加载TIFF失败: {ex.Message}");
+                }
             }
 
+            
         }
 
         private void 平移ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -161,7 +201,7 @@ namespace WinFormsApp1
 
             // 添加到地图并开始编辑
             editingLayer = map.Layers.Add(featureSet) as IMapFeatureLayer;
-            editingLayer.DataSet.StartEditing();
+            //editingLayer.DataSet.StartEditing();
         }
         private void 添加点ToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -185,10 +225,10 @@ namespace WinFormsApp1
             {
                 editingLayer.DataSet.SaveAs(saveFileDialog.FileName, true);
                 //editingLayer.DataSet.(true); // 保存并结束编辑
-                if (editingLayer is IEditableLayer editableLayer)
-                {
-                    editableLayer.EndEdit();
-                }
+                // if (editingLayer is IEditableLayer editableLayer)
+                // {
+                //   editableLayer.EndEdit();
+                // }
 
                 MessageBox.Show("保存成功！");
             }
@@ -206,7 +246,12 @@ namespace WinFormsApp1
         private void toolStripButton3_Click(object sender, EventArgs e)
         {
             base.OnLoad(e);
-            LoadOrCreatePointLayer(); // 在窗体加载时创建一个示例图层
+            LoadOrCreatePointLayer();
+        }
+
+        private void 距离测量ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+           // MapFunctionMeasure measureDistance = new MapFunctionMeasure(map);
         }
     }
 
