@@ -162,6 +162,7 @@ namespace WinFormsApp1
             // 添加到地图并开始编辑
             editingLayer = map.Layers.Add(featureSet) as IMapFeatureLayer;
             editingLayer.DataSet.StartEditing();
+        }
         private void 添加点ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (editingLayer == null)
@@ -184,6 +185,11 @@ namespace WinFormsApp1
             {
                 editingLayer.DataSet.SaveAs(saveFileDialog.FileName, true);
                 //editingLayer.DataSet.(true); // 保存并结束编辑
+                if (editingLayer is IEditableLayer editableLayer)
+                {
+                    editableLayer.EndEdit();
+                }
+
                 MessageBox.Show("保存成功！");
             }
         }
@@ -200,7 +206,7 @@ namespace WinFormsApp1
         private void toolStripButton3_Click(object sender, EventArgs e)
         {
             base.OnLoad(e);
-            LoadOrCreatePointLayer();
+            LoadOrCreatePointLayer(); // 在窗体加载时创建一个示例图层
         }
     }
 

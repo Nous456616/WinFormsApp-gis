@@ -50,6 +50,7 @@
             toolStripButton1 = new ToolStripButton();
             toolStripButton2 = new ToolStripButton();
             toolStripButton3 = new ToolStripButton();
+            缓冲区分析ToolStripMenuItem = new ToolStripMenuItem();
             toolStrip1.SuspendLayout();
             SuspendLayout();
             // 
@@ -75,14 +76,14 @@
             // shpToolStripMenuItem
             // 
             shpToolStripMenuItem.Name = "shpToolStripMenuItem";
-            shpToolStripMenuItem.Size = new Size(145, 22);
+            shpToolStripMenuItem.Size = new Size(180, 22);
             shpToolStripMenuItem.Text = "加载shp文件";
             shpToolStripMenuItem.Click += shpToolStripMenuItem_Click;
             // 
             // tiffToolStripMenuItem
             // 
             tiffToolStripMenuItem.Name = "tiffToolStripMenuItem";
-            tiffToolStripMenuItem.Size = new Size(145, 22);
+            tiffToolStripMenuItem.Size = new Size(180, 22);
             tiffToolStripMenuItem.Text = "加载tiff文件";
             tiffToolStripMenuItem.Click += tiffToolStripMenuItem_Click;
             // 
@@ -99,35 +100,35 @@
             // 选择ToolStripMenuItem
             // 
             选择ToolStripMenuItem.Name = "选择ToolStripMenuItem";
-            选择ToolStripMenuItem.Size = new Size(100, 22);
+            选择ToolStripMenuItem.Size = new Size(180, 22);
             选择ToolStripMenuItem.Text = "选择";
             选择ToolStripMenuItem.Click += 选择ToolStripMenuItem_Click;
             // 
             // 放大ToolStripMenuItem
             // 
             放大ToolStripMenuItem.Name = "放大ToolStripMenuItem";
-            放大ToolStripMenuItem.Size = new Size(100, 22);
+            放大ToolStripMenuItem.Size = new Size(180, 22);
             放大ToolStripMenuItem.Text = "放大";
             放大ToolStripMenuItem.Click += 放大ToolStripMenuItem_Click;
             // 
             // 缩小ToolStripMenuItem
             // 
             缩小ToolStripMenuItem.Name = "缩小ToolStripMenuItem";
-            缩小ToolStripMenuItem.Size = new Size(100, 22);
+            缩小ToolStripMenuItem.Size = new Size(180, 22);
             缩小ToolStripMenuItem.Text = "缩小";
             缩小ToolStripMenuItem.Click += 缩小ToolStripMenuItem_Click;
             // 
             // 全景ToolStripMenuItem
             // 
             全景ToolStripMenuItem.Name = "全景ToolStripMenuItem";
-            全景ToolStripMenuItem.Size = new Size(100, 22);
+            全景ToolStripMenuItem.Size = new Size(180, 22);
             全景ToolStripMenuItem.Text = "全景";
             全景ToolStripMenuItem.Click += 全景ToolStripMenuItem_Click;
             // 
             // 平移ToolStripMenuItem
             // 
             平移ToolStripMenuItem.Name = "平移ToolStripMenuItem";
-            平移ToolStripMenuItem.Size = new Size(100, 22);
+            平移ToolStripMenuItem.Size = new Size(180, 22);
             平移ToolStripMenuItem.Text = "平移";
             平移ToolStripMenuItem.Click += 平移ToolStripMenuItem_Click;
             // 
@@ -181,6 +182,7 @@
             // toolStripDropDownButton2
             // 
             toolStripDropDownButton2.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            toolStripDropDownButton2.DropDownItems.AddRange(new ToolStripItem[] { 缓冲区分析ToolStripMenuItem });
             toolStripDropDownButton2.Image = (Image)resources.GetObject("toolStripDropDownButton2.Image");
             toolStripDropDownButton2.ImageTransparentColor = Color.Magenta;
             toolStripDropDownButton2.Name = "toolStripDropDownButton2";
@@ -216,6 +218,12 @@
             toolStripButton3.Size = new Size(108, 22);
             toolStripButton3.Text = "创建一个矢量图层";
             toolStripButton3.Click += toolStripButton3_Click;
+            // 
+            // 缓冲区分析ToolStripMenuItem
+            // 
+            缓冲区分析ToolStripMenuItem.Name = "缓冲区分析ToolStripMenuItem";
+            缓冲区分析ToolStripMenuItem.Size = new Size(180, 22);
+            缓冲区分析ToolStripMenuItem.Text = "缓冲区分析";
             // 
             // Form1
             // 
@@ -254,5 +262,6 @@
         private ToolStripButton toolStripButton1;
         private ToolStripButton toolStripButton2;
         private ToolStripButton toolStripButton3;
+        private ToolStripMenuItem 缓冲区分析ToolStripMenuItem;
     }
 }
