@@ -42,8 +42,6 @@
             全景ToolStripMenuItem = new ToolStripMenuItem();
             平移ToolStripMenuItem = new ToolStripMenuItem();
             交互 = new ToolStripDropDownButton();
-            距离测量ToolStripMenuItem = new ToolStripMenuItem();
-            关闭距离测量ToolStripMenuItem = new ToolStripMenuItem();
             添加点ToolStripMenuItem = new ToolStripMenuItem();
             删除所选要素ToolStripMenuItem = new ToolStripMenuItem();
             toolStripDropDownButton2 = new ToolStripDropDownButton();
@@ -55,6 +53,9 @@
             legend1 = new DotSpatial.Controls.Legend();
             lstlayers = new ListView();
             label1 = new Label();
+            添加ToolStripMenuItem = new ToolStripMenuItem();
+            添加面ToolStripMenuItem = new ToolStripMenuItem();
+            点距离ToolStripMenuItem = new ToolStripMenuItem();
             toolStrip1.SuspendLayout();
             SuspendLayout();
             // 
@@ -141,25 +142,12 @@
             // 交互
             // 
             交互.DisplayStyle = ToolStripItemDisplayStyle.Text;
-            交互.DropDownItems.AddRange(new ToolStripItem[] { 距离测量ToolStripMenuItem, 关闭距离测量ToolStripMenuItem, 添加点ToolStripMenuItem, 删除所选要素ToolStripMenuItem });
+            交互.DropDownItems.AddRange(new ToolStripItem[] { 添加点ToolStripMenuItem, 添加ToolStripMenuItem, 添加面ToolStripMenuItem, 删除所选要素ToolStripMenuItem });
             交互.Image = (Image)resources.GetObject("交互.Image");
             交互.ImageTransparentColor = Color.Magenta;
             交互.Name = "交互";
             交互.Size = new Size(84, 35);
             交互.Text = "交互";
-            // 
-            // 距离测量ToolStripMenuItem
-            // 
-            距离测量ToolStripMenuItem.Name = "距离测量ToolStripMenuItem";
-            距离测量ToolStripMenuItem.Size = new Size(291, 44);
-            距离测量ToolStripMenuItem.Text = "距离测量";
-            距离测量ToolStripMenuItem.Click += 距离测量ToolStripMenuItem_Click;
-            // 
-            // 关闭距离测量ToolStripMenuItem
-            // 
-            关闭距离测量ToolStripMenuItem.Name = "关闭距离测量ToolStripMenuItem";
-            关闭距离测量ToolStripMenuItem.Size = new Size(291, 44);
-            关闭距离测量ToolStripMenuItem.Text = "关闭距离测量";
             // 
             // 添加点ToolStripMenuItem
             // 
@@ -178,7 +166,7 @@
             // toolStripDropDownButton2
             // 
             toolStripDropDownButton2.DisplayStyle = ToolStripItemDisplayStyle.Text;
-            toolStripDropDownButton2.DropDownItems.AddRange(new ToolStripItem[] { 缓冲区分析ToolStripMenuItem });
+            toolStripDropDownButton2.DropDownItems.AddRange(new ToolStripItem[] { 缓冲区分析ToolStripMenuItem, 点距离ToolStripMenuItem });
             toolStripDropDownButton2.Image = (Image)resources.GetObject("toolStripDropDownButton2.Image");
             toolStripDropDownButton2.ImageTransparentColor = Color.Magenta;
             toolStripDropDownButton2.Name = "toolStripDropDownButton2";
@@ -208,7 +196,7 @@
             toolStripButton3.Image = (Image)resources.GetObject("toolStripButton3.Image");
             toolStripButton3.ImageTransparentColor = Color.Magenta;
             toolStripButton3.Name = "toolStripButton3";
-            toolStripButton3.Size = new Size(210, 35);
+            toolStripButton3.Size = new Size(108, 22);
             toolStripButton3.Text = "创建一个矢量图层";
             toolStripButton3.Click += toolStripButton3_Click;
             // 
@@ -228,7 +216,7 @@
             toolStripButton4.Image = (Image)resources.GetObject("toolStripButton4.Image");
             toolStripButton4.ImageTransparentColor = Color.Magenta;
             toolStripButton4.Name = "toolStripButton4";
-            toolStripButton4.Size = new Size(114, 35);
+            toolStripButton4.Size = new Size(60, 22);
             toolStripButton4.Text = "删除图层";
             toolStripButton4.Click += toolStripButton4_Click;
             // 
@@ -279,6 +267,25 @@
             label1.TabIndex = 4;
             label1.Text = "Maplayer";
             // 
+            // 添加ToolStripMenuItem
+            // 
+            添加ToolStripMenuItem.Name = "添加ToolStripMenuItem";
+            添加ToolStripMenuItem.Size = new Size(180, 22);
+            添加ToolStripMenuItem.Text = "添加线";
+            添加ToolStripMenuItem.Click += 添加ToolStripMenuItem_Click;
+            // 
+            // 添加面ToolStripMenuItem
+            // 
+            添加面ToolStripMenuItem.Name = "添加面ToolStripMenuItem";
+            添加面ToolStripMenuItem.Size = new Size(148, 22);
+            添加面ToolStripMenuItem.Text = "添加面";
+            // 
+            // 点距离ToolStripMenuItem
+            // 
+            点距离ToolStripMenuItem.Name = "点距离ToolStripMenuItem";
+            点距离ToolStripMenuItem.Size = new Size(180, 22);
+            点距离ToolStripMenuItem.Text = "点距离";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(14F, 31F);
@@ -310,8 +317,6 @@
         private ToolStripMenuItem 全景ToolStripMenuItem;
         private ToolStripMenuItem 平移ToolStripMenuItem;
         private ToolStripDropDownButton 交互;
-        private ToolStripMenuItem 距离测量ToolStripMenuItem;
-        private ToolStripMenuItem 关闭距离测量ToolStripMenuItem;
         private ToolStripDropDownButton toolStripDropDownButton2;
         private ToolStripMenuItem 添加点ToolStripMenuItem;
         private ToolStripButton toolStripButton1;
@@ -323,5 +328,8 @@
         private ToolStripMenuItem 删除所选要素ToolStripMenuItem;
         private Label label1;
         private ToolStripButton toolStripButton4;
+        private ToolStripMenuItem 添加ToolStripMenuItem;
+        private ToolStripMenuItem 添加面ToolStripMenuItem;
+        private ToolStripMenuItem 点距离ToolStripMenuItem;
     }
 }

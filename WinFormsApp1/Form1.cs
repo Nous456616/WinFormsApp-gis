@@ -9,6 +9,7 @@ using System;
 using System.Windows.Forms;
 using System.Data;
 using System.Linq;
+using System.Security.Cryptography;
 using Microsoft.VisualBasic;
 namespace WinFormsApp1
 {
@@ -16,10 +17,11 @@ namespace WinFormsApp1
     {
         private IMapFeatureLayer editingLayer;
         private bool isAddingPoints = false;   // 是否处于添加点模式
+        private bool isAddinglines = false;   // 是否处于添加线模式
         private Map map;
         private SaveFileDialog saveFileDialog = new SaveFileDialog();
         private IMapLayer _selectedLayer;
-
+       
 
         public Form1()
         {
@@ -94,20 +96,37 @@ namespace WinFormsApp1
             }
         }
 
-        private void tiffToolStripMenuItem_Click(object sender, EventArgs e)
+        private void tiffToolStripMenuItem_Click(object sender, EventArgs e)//tif文件
         {
-            using (var ofd = new OpenFileDialog())
-            {
-                ofd.Filter = "TIFF Files (*.tif)|*.tif";
+            using(OpenFileDialog ofd = new OpenFileDialog())
+        {
+                ofd.Filter = "TIFF Files (*.tif;*.tiff)|*.tif;*.tiff";
+                ofd.Title = "选择栅格文件";
+
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    var raster = ImageData.Open(ofd.FileName);
-                    map.Layers.Add(raster);
-                    UpdateLayerList();
-                    map.Refresh();
+                    try
+                    {
+                        // 使用Raster.Open读取地理参考数据（推荐方式）
+                        IRaster raster = Raster.Open(ofd.FileName);
+
+                        // 添加栅格图层到地图
+                        map.Layers.Add(raster);
+
+                        // 自动缩放至图层范围
+                        map.ZoomToMaxExtent();
+
+                        // 更新图层列表
+                        UpdateLayerList();
+
+                        MessageBox.Show("TIFF加载成功");
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"加载失败: {ex.Message}");
+                    }
                 }
             }
-
         }
 
         private void 平移ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -120,7 +139,7 @@ namespace WinFormsApp1
 
             map.FunctionMode = FunctionMode.Select; // 切换到选择模式
         }
-        private void Map_MouseClick(object sender, MouseEventArgs e)
+        private void Map_MouseClick(object sender, MouseEventArgs e)//添加点
         {
             if (!isAddingPoints || editingLayer == null) return;
 
@@ -151,9 +170,36 @@ namespace WinFormsApp1
                 map.Cursor = Cursors.Default;
             }
         }
+        private void Map_MouseChick_1(object sender, MouseEventArgs e)//添加线
+        {
+            if (!isAddinglines || editingLayer == null) return;
+            if (e.Button == MouseButtons.Left)
+            {
+                // 将点击位置转换为地图坐标
+                Coordinate coord = map.PixelToProj(e.Location);
+                // 使用 NetTopologySuite.Geometries.Point
+                NetTopologySuite.Geometries.Point point = new NetTopologySuite.Geometries.Point(coord.X, coord.Y);
+                
+                // 将点添加到图层
+                IFeature feature = editingLayer.DataSet.AddFeature(point);
+                // 设置点的显示样式（红色圆形，大小8像素）
+                if (editingLayer.Symbology == null)
+                {
+                    // 使用 DotSpatial.Symbology.PointShape
+                    var symbolizer = new PointSymbolizer(Color.Red, DotSpatial.Symbology.PointShape.Ellipse, 8);
+                    editingLayer.Symbology = new PointScheme { Categories = { new PointCategory(symbolizer) } };
+                }
+                map.ResetBuffer(); // 刷新地图
+            }
+            else if (e.Button == MouseButtons.Right)
+            {
+                isAddinglines = false;
+                map.Cursor = Cursors.Default;
+            }
+        }
         private void LoadOrCreatePointLayer()
         {
-            // 示例：创建一个新的点图层
+            // 创建一个新的点图层
             FeatureSet featureSet = new FeatureSet(FeatureType.Point);
             featureSet.Projection = map.Projection;
 
@@ -209,13 +255,8 @@ namespace WinFormsApp1
         {
             base.OnLoad(e);
             LoadOrCreatePointLayer();
+            UpdateLayerList();//创建矢量图层
         }
-
-        private void 距离测量ToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            // MapFunctionMeasure measureDistance = new MapFunctionMeasure(map);
-        }
-
         private void legend1_Click(object sender, EventArgs e)
         {
 
@@ -244,8 +285,6 @@ namespace WinFormsApp1
             }
 
         }
-
-
         private void lstlayers_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (lstlayers.SelectedItems.Count > 0)
@@ -256,7 +295,17 @@ namespace WinFormsApp1
 
         private void 删除所选要素ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            if (_selectedLayer is IMapFeatureLayer featureLayer)
+            {
+                var features = featureLayer.Selection.ToFeatureList();
+                foreach (var feature in features)
+                {
+                    featureLayer.DataSet.Features.Remove(feature);
+                }
+                map.ResetBuffer();
+                map.Refresh();
+                UpdateLayerList();
+            }
         }
 
 
@@ -301,6 +350,15 @@ namespace WinFormsApp1
             };
             map.Layers.Add(bufferLayer);
             map.ZoomToMaxExtent();
+        }
+
+        private void 添加ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (editingLayer == null)
+            {
+                MessageBox.Show("请先加载或创建一个可编辑的矢量图层！");
+                return;
+            }
         }
     }
 
