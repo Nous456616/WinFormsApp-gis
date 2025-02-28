@@ -49,21 +49,23 @@
             toolStripDropDownButton2 = new ToolStripDropDownButton();
             缓冲区分析ToolStripMenuItem = new ToolStripMenuItem();
             toolStripButton1 = new ToolStripButton();
-            toolStripButton2 = new ToolStripButton();
             toolStripButton3 = new ToolStripButton();
+            toolStripButton2 = new ToolStripButton();
+            toolStripButton4 = new ToolStripButton();
             legend1 = new DotSpatial.Controls.Legend();
             lstlayers = new ListView();
             label1 = new Label();
-            toolStripButton4 = new ToolStripButton();
             toolStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // toolStrip1
             // 
+            toolStrip1.ImageScalingSize = new Size(32, 32);
             toolStrip1.Items.AddRange(new ToolStripItem[] { 文件, toolStripDropDownButton1, 交互, toolStripDropDownButton2, toolStripButton1, toolStripButton3, toolStripButton2, toolStripButton4 });
             toolStrip1.Location = new Point(0, 0);
             toolStrip1.Name = "toolStrip1";
-            toolStrip1.Size = new Size(800, 25);
+            toolStrip1.Padding = new Padding(0, 0, 4, 0);
+            toolStrip1.Size = new Size(1600, 41);
             toolStrip1.TabIndex = 1;
             toolStrip1.Text = "toolStrip1";
             // 
@@ -74,20 +76,20 @@
             文件.Image = (Image)resources.GetObject("文件.Image");
             文件.ImageTransparentColor = Color.Magenta;
             文件.Name = "文件";
-            文件.Size = new Size(45, 22);
+            文件.Size = new Size(84, 35);
             文件.Text = "文件";
             // 
             // shpToolStripMenuItem
             // 
             shpToolStripMenuItem.Name = "shpToolStripMenuItem";
-            shpToolStripMenuItem.Size = new Size(145, 22);
+            shpToolStripMenuItem.Size = new Size(284, 44);
             shpToolStripMenuItem.Text = "加载shp文件";
             shpToolStripMenuItem.Click += shpToolStripMenuItem_Click;
             // 
             // tiffToolStripMenuItem
             // 
             tiffToolStripMenuItem.Name = "tiffToolStripMenuItem";
-            tiffToolStripMenuItem.Size = new Size(145, 22);
+            tiffToolStripMenuItem.Size = new Size(284, 44);
             tiffToolStripMenuItem.Text = "加载tiff文件";
             tiffToolStripMenuItem.Click += tiffToolStripMenuItem_Click;
             // 
@@ -98,41 +100,41 @@
             toolStripDropDownButton1.Image = (Image)resources.GetObject("toolStripDropDownButton1.Image");
             toolStripDropDownButton1.ImageTransparentColor = Color.Magenta;
             toolStripDropDownButton1.Name = "toolStripDropDownButton1";
-            toolStripDropDownButton1.Size = new Size(93, 22);
+            toolStripDropDownButton1.Size = new Size(180, 35);
             toolStripDropDownButton1.Text = "地图基本操作";
             // 
             // 选择ToolStripMenuItem
             // 
             选择ToolStripMenuItem.Name = "选择ToolStripMenuItem";
-            选择ToolStripMenuItem.Size = new Size(100, 22);
+            选择ToolStripMenuItem.Size = new Size(195, 44);
             选择ToolStripMenuItem.Text = "选择";
             选择ToolStripMenuItem.Click += 选择ToolStripMenuItem_Click;
             // 
             // 放大ToolStripMenuItem
             // 
             放大ToolStripMenuItem.Name = "放大ToolStripMenuItem";
-            放大ToolStripMenuItem.Size = new Size(100, 22);
+            放大ToolStripMenuItem.Size = new Size(195, 44);
             放大ToolStripMenuItem.Text = "放大";
             放大ToolStripMenuItem.Click += 放大ToolStripMenuItem_Click;
             // 
             // 缩小ToolStripMenuItem
             // 
             缩小ToolStripMenuItem.Name = "缩小ToolStripMenuItem";
-            缩小ToolStripMenuItem.Size = new Size(100, 22);
+            缩小ToolStripMenuItem.Size = new Size(195, 44);
             缩小ToolStripMenuItem.Text = "缩小";
             缩小ToolStripMenuItem.Click += 缩小ToolStripMenuItem_Click;
             // 
             // 全景ToolStripMenuItem
             // 
             全景ToolStripMenuItem.Name = "全景ToolStripMenuItem";
-            全景ToolStripMenuItem.Size = new Size(100, 22);
+            全景ToolStripMenuItem.Size = new Size(195, 44);
             全景ToolStripMenuItem.Text = "全景";
             全景ToolStripMenuItem.Click += 全景ToolStripMenuItem_Click;
             // 
             // 平移ToolStripMenuItem
             // 
             平移ToolStripMenuItem.Name = "平移ToolStripMenuItem";
-            平移ToolStripMenuItem.Size = new Size(100, 22);
+            平移ToolStripMenuItem.Size = new Size(195, 44);
             平移ToolStripMenuItem.Text = "平移";
             平移ToolStripMenuItem.Click += 平移ToolStripMenuItem_Click;
             // 
@@ -143,33 +145,33 @@
             交互.Image = (Image)resources.GetObject("交互.Image");
             交互.ImageTransparentColor = Color.Magenta;
             交互.Name = "交互";
-            交互.Size = new Size(45, 22);
+            交互.Size = new Size(84, 35);
             交互.Text = "交互";
             // 
             // 距离测量ToolStripMenuItem
             // 
             距离测量ToolStripMenuItem.Name = "距离测量ToolStripMenuItem";
-            距离测量ToolStripMenuItem.Size = new Size(148, 22);
+            距离测量ToolStripMenuItem.Size = new Size(291, 44);
             距离测量ToolStripMenuItem.Text = "距离测量";
             距离测量ToolStripMenuItem.Click += 距离测量ToolStripMenuItem_Click;
             // 
             // 关闭距离测量ToolStripMenuItem
             // 
             关闭距离测量ToolStripMenuItem.Name = "关闭距离测量ToolStripMenuItem";
-            关闭距离测量ToolStripMenuItem.Size = new Size(148, 22);
+            关闭距离测量ToolStripMenuItem.Size = new Size(291, 44);
             关闭距离测量ToolStripMenuItem.Text = "关闭距离测量";
             // 
             // 添加点ToolStripMenuItem
             // 
             添加点ToolStripMenuItem.Name = "添加点ToolStripMenuItem";
-            添加点ToolStripMenuItem.Size = new Size(148, 22);
+            添加点ToolStripMenuItem.Size = new Size(291, 44);
             添加点ToolStripMenuItem.Text = "添加点";
             添加点ToolStripMenuItem.Click += 添加点ToolStripMenuItem_Click;
             // 
             // 删除所选要素ToolStripMenuItem
             // 
             删除所选要素ToolStripMenuItem.Name = "删除所选要素ToolStripMenuItem";
-            删除所选要素ToolStripMenuItem.Size = new Size(148, 22);
+            删除所选要素ToolStripMenuItem.Size = new Size(291, 44);
             删除所选要素ToolStripMenuItem.Text = "删除所选要素";
             删除所选要素ToolStripMenuItem.Click += 删除所选要素ToolStripMenuItem_Click;
             // 
@@ -180,14 +182,15 @@
             toolStripDropDownButton2.Image = (Image)resources.GetObject("toolStripDropDownButton2.Image");
             toolStripDropDownButton2.ImageTransparentColor = Color.Magenta;
             toolStripDropDownButton2.Name = "toolStripDropDownButton2";
-            toolStripDropDownButton2.Size = new Size(69, 22);
+            toolStripDropDownButton2.Size = new Size(132, 35);
             toolStripDropDownButton2.Text = "分析处理";
             // 
             // 缓冲区分析ToolStripMenuItem
             // 
             缓冲区分析ToolStripMenuItem.Name = "缓冲区分析ToolStripMenuItem";
-            缓冲区分析ToolStripMenuItem.Size = new Size(136, 22);
+            缓冲区分析ToolStripMenuItem.Size = new Size(359, 44);
             缓冲区分析ToolStripMenuItem.Text = "缓冲区分析";
+            缓冲区分析ToolStripMenuItem.Click += 缓冲区分析ToolStripMenuItem_Click;
             // 
             // toolStripButton1
             // 
@@ -195,19 +198,9 @@
             toolStripButton1.Image = (Image)resources.GetObject("toolStripButton1.Image");
             toolStripButton1.ImageTransparentColor = Color.Magenta;
             toolStripButton1.Name = "toolStripButton1";
-            toolStripButton1.Size = new Size(60, 22);
+            toolStripButton1.Size = new Size(114, 35);
             toolStripButton1.Text = "开始编辑";
             toolStripButton1.Click += toolStripButton1_Click;
-            // 
-            // toolStripButton2
-            // 
-            toolStripButton2.DisplayStyle = ToolStripItemDisplayStyle.Text;
-            toolStripButton2.Image = (Image)resources.GetObject("toolStripButton2.Image");
-            toolStripButton2.ImageTransparentColor = Color.Magenta;
-            toolStripButton2.Name = "toolStripButton2";
-            toolStripButton2.Size = new Size(60, 22);
-            toolStripButton2.Text = "保存编辑";
-            toolStripButton2.Click += toolStripButton2_Click;
             // 
             // toolStripButton3
             // 
@@ -215,26 +208,48 @@
             toolStripButton3.Image = (Image)resources.GetObject("toolStripButton3.Image");
             toolStripButton3.ImageTransparentColor = Color.Magenta;
             toolStripButton3.Name = "toolStripButton3";
-            toolStripButton3.Size = new Size(108, 22);
+            toolStripButton3.Size = new Size(210, 35);
             toolStripButton3.Text = "创建一个矢量图层";
             toolStripButton3.Click += toolStripButton3_Click;
+            // 
+            // toolStripButton2
+            // 
+            toolStripButton2.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            toolStripButton2.Image = (Image)resources.GetObject("toolStripButton2.Image");
+            toolStripButton2.ImageTransparentColor = Color.Magenta;
+            toolStripButton2.Name = "toolStripButton2";
+            toolStripButton2.Size = new Size(114, 35);
+            toolStripButton2.Text = "保存编辑";
+            toolStripButton2.Click += toolStripButton2_Click;
+            // 
+            // toolStripButton4
+            // 
+            toolStripButton4.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            toolStripButton4.Image = (Image)resources.GetObject("toolStripButton4.Image");
+            toolStripButton4.ImageTransparentColor = Color.Magenta;
+            toolStripButton4.Name = "toolStripButton4";
+            toolStripButton4.Size = new Size(114, 35);
+            toolStripButton4.Text = "删除图层";
+            toolStripButton4.Click += toolStripButton4_Click;
             // 
             // legend1
             // 
             legend1.BackColor = Color.White;
-            legend1.ControlRectangle = new Rectangle(0, 0, 112, 428);
+            legend1.ControlRectangle = new Rectangle(0, 0, 224, 780);
+            legend1.Dock = DockStyle.Left;
             legend1.DocumentRectangle = new Rectangle(0, 0, 187, 428);
             legend1.HorizontalScrollEnabled = true;
             legend1.Indentation = 30;
             legend1.IsInitialized = false;
-            legend1.Location = new Point(0, 28);
-            legend1.MinimumSize = new Size(5, 5);
+            legend1.Location = new Point(0, 41);
+            legend1.Margin = new Padding(6, 5, 6, 5);
+            legend1.MinimumSize = new Size(10, 9);
             legend1.Name = "legend1";
             legend1.ProgressHandler = null;
             legend1.ResetOnResize = false;
             legend1.SelectionFontColor = Color.Black;
             legend1.SelectionHighlight = Color.FromArgb(215, 238, 252);
-            legend1.Size = new Size(112, 428);
+            legend1.Size = new Size(224, 780);
             legend1.TabIndex = 2;
             legend1.Text = "legend1";
             legend1.UseLegendForSelection = true;
@@ -245,9 +260,10 @@
             // 
             lstlayers.AutoArrange = false;
             lstlayers.CheckBoxes = true;
-            lstlayers.Location = new Point(0, 56);
+            lstlayers.Location = new Point(0, 102);
+            lstlayers.Margin = new Padding(6, 5, 6, 5);
             lstlayers.Name = "lstlayers";
-            lstlayers.Size = new Size(112, 382);
+            lstlayers.Size = new Size(220, 693);
             lstlayers.TabIndex = 3;
             lstlayers.UseCompatibleStateImageBehavior = false;
             lstlayers.ItemChecked += lstlayers_ItemChecked;
@@ -256,31 +272,23 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(12, 36);
+            label1.Location = new Point(24, 66);
+            label1.Margin = new Padding(6, 0, 6, 0);
             label1.Name = "label1";
-            label1.Size = new Size(63, 17);
+            label1.Size = new Size(120, 31);
             label1.TabIndex = 4;
             label1.Text = "Maplayer";
             // 
-            // toolStripButton4
-            // 
-            toolStripButton4.DisplayStyle = ToolStripItemDisplayStyle.Text;
-            toolStripButton4.Image = (Image)resources.GetObject("toolStripButton4.Image");
-            toolStripButton4.ImageTransparentColor = Color.Magenta;
-            toolStripButton4.Name = "toolStripButton4";
-            toolStripButton4.Size = new Size(60, 22);
-            toolStripButton4.Text = "删除图层";
-            toolStripButton4.Click += toolStripButton4_Click;
-            // 
             // Form1
             // 
-            AutoScaleDimensions = new SizeF(7F, 17F);
+            AutoScaleDimensions = new SizeF(14F, 31F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(1600, 821);
             Controls.Add(label1);
             Controls.Add(lstlayers);
             Controls.Add(legend1);
             Controls.Add(toolStrip1);
+            Margin = new Padding(6, 5, 6, 5);
             Name = "Form1";
             Text = "Form1";
             Load += Form1_Load;

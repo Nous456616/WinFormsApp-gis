@@ -9,6 +9,7 @@ using System;
 using System.Windows.Forms;
 using System.Data;
 using System.Linq;
+using Microsoft.VisualBasic;
 namespace WinFormsApp1
 {
     public partial class Form1 : Form
@@ -18,7 +19,7 @@ namespace WinFormsApp1
         private Map map;
         private SaveFileDialog saveFileDialog = new SaveFileDialog();
         private IMapLayer _selectedLayer;
-       
+
 
         public Form1()
         {
@@ -161,7 +162,7 @@ namespace WinFormsApp1
             featureSet.DataTable.Columns.Add("ID", typeof(int));
 
             // 添加到地图并开始编辑
-            editingLayer = map.Layers.Add(featureSet) as IMapFeatureLayer;
+            editingLayer = map.Layers.Add(featureSet);
             //editingLayer.DataSet.StartEditing();
         }
         private void 添加点ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -255,10 +256,10 @@ namespace WinFormsApp1
 
         private void 删除所选要素ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-           
+
         }
 
-   
+
 
         private void toolStripButton4_Click(object sender, EventArgs e)
         {
@@ -269,6 +270,37 @@ namespace WinFormsApp1
                 UpdateLayerList();
                 map.Refresh();
             }
+        }
+
+        private void 缓冲区分析ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (map.Layers.Count == 0)
+            {
+                MessageBox.Show("请先加载一个shp文件。");
+                return;
+            }
+
+            IFeatureLayer lineLayer = map.Layers[0] as IFeatureLayer;
+            if (lineLayer == null)
+            {
+                MessageBox.Show("无效的图层。");
+                return;
+            }
+            string s = Interaction.InputBox("设置缓冲区距离", "缓冲区距离", "10.0", -1, -1);
+            double bufferDistance;
+            try
+            {
+                bufferDistance = Double.Parse(s);
+            }
+            catch (FormatException)
+            { MessageBox.Show("无效的距离"); return; }
+            IFeatureSet bufferFeatureSet = lineLayer.DataSet.Buffer(bufferDistance, true);
+            MapPolygonLayer bufferLayer = new MapPolygonLayer(bufferFeatureSet)
+            {
+                Symbolizer = new PolygonSymbolizer(System.Drawing.Color.FromArgb(128, System.Drawing.Color.Red))
+            };
+            map.Layers.Add(bufferLayer);
+            map.ZoomToMaxExtent();
         }
     }
 
