@@ -18,7 +18,7 @@ namespace WinFormsApp1
         private Map map;
         private SaveFileDialog saveFileDialog = new SaveFileDialog();
         private IMapLayer _selectedLayer;
-        private Legend legend;//图层控件
+       
 
         public Form1()
         {
@@ -253,21 +253,20 @@ namespace WinFormsApp1
             }
         }
 
-        private void map1_Load_1(object sender, EventArgs e)
-        {
-
-        }
-
         private void 删除所选要素ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (_selectedLayer is IMapFeatureLayer featureLayer)
+           
+        }
+
+   
+
+        private void toolStripButton4_Click(object sender, EventArgs e)
+        {
+            if (lstlayers.SelectedItems.Count > 0)
             {
-                var features = featureLayer.Selection.ToFeatureList();
-                foreach (var feature in features)
-                {
-                    featureLayer.DataSet.Features.Remove(feature);
-                }
-                map.ResetBuffer();
+                var layer = lstlayers.SelectedItems[0].Tag as IMapLayer;
+                map.Layers.Remove(layer);
+                UpdateLayerList();
                 map.Refresh();
             }
         }

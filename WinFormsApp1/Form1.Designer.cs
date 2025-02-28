@@ -53,12 +53,14 @@
             toolStripButton3 = new ToolStripButton();
             legend1 = new DotSpatial.Controls.Legend();
             lstlayers = new ListView();
+            label1 = new Label();
+            toolStripButton4 = new ToolStripButton();
             toolStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // toolStrip1
             // 
-            toolStrip1.Items.AddRange(new ToolStripItem[] { 文件, toolStripDropDownButton1, 交互, toolStripDropDownButton2, toolStripButton1, toolStripButton2, toolStripButton3 });
+            toolStrip1.Items.AddRange(new ToolStripItem[] { 文件, toolStripDropDownButton1, 交互, toolStripDropDownButton2, toolStripButton1, toolStripButton3, toolStripButton2, toolStripButton4 });
             toolStrip1.Location = new Point(0, 0);
             toolStrip1.Name = "toolStrip1";
             toolStrip1.Size = new Size(800, 25);
@@ -167,7 +169,7 @@
             // 删除所选要素ToolStripMenuItem
             // 
             删除所选要素ToolStripMenuItem.Name = "删除所选要素ToolStripMenuItem";
-            删除所选要素ToolStripMenuItem.Size = new Size(180, 22);
+            删除所选要素ToolStripMenuItem.Size = new Size(148, 22);
             删除所选要素ToolStripMenuItem.Text = "删除所选要素";
             删除所选要素ToolStripMenuItem.Click += 删除所选要素ToolStripMenuItem_Click;
             // 
@@ -220,7 +222,7 @@
             // legend1
             // 
             legend1.BackColor = Color.White;
-            legend1.ControlRectangle = new Rectangle(0, 0, 187, 428);
+            legend1.ControlRectangle = new Rectangle(0, 0, 112, 428);
             legend1.DocumentRectangle = new Rectangle(0, 0, 187, 428);
             legend1.HorizontalScrollEnabled = true;
             legend1.Indentation = 30;
@@ -232,7 +234,7 @@
             legend1.ResetOnResize = false;
             legend1.SelectionFontColor = Color.Black;
             legend1.SelectionHighlight = Color.FromArgb(215, 238, 252);
-            legend1.Size = new Size(187, 428);
+            legend1.Size = new Size(112, 428);
             legend1.TabIndex = 2;
             legend1.Text = "legend1";
             legend1.UseLegendForSelection = true;
@@ -243,19 +245,39 @@
             // 
             lstlayers.AutoArrange = false;
             lstlayers.CheckBoxes = true;
-            lstlayers.Location = new Point(0, 28);
+            lstlayers.Location = new Point(0, 56);
             lstlayers.Name = "lstlayers";
-            lstlayers.Size = new Size(142, 265);
+            lstlayers.Size = new Size(112, 382);
             lstlayers.TabIndex = 3;
             lstlayers.UseCompatibleStateImageBehavior = false;
             lstlayers.ItemChecked += lstlayers_ItemChecked;
             lstlayers.SelectedIndexChanged += lstlayers_SelectedIndexChanged;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(12, 36);
+            label1.Name = "label1";
+            label1.Size = new Size(63, 17);
+            label1.TabIndex = 4;
+            label1.Text = "Maplayer";
+            // 
+            // toolStripButton4
+            // 
+            toolStripButton4.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            toolStripButton4.Image = (Image)resources.GetObject("toolStripButton4.Image");
+            toolStripButton4.ImageTransparentColor = Color.Magenta;
+            toolStripButton4.Name = "toolStripButton4";
+            toolStripButton4.Size = new Size(60, 22);
+            toolStripButton4.Text = "删除图层";
+            toolStripButton4.Click += toolStripButton4_Click;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(label1);
             Controls.Add(lstlayers);
             Controls.Add(legend1);
             Controls.Add(toolStrip1);
@@ -291,5 +313,7 @@
         private DotSpatial.Controls.Legend legend1;
         private ListView lstlayers;
         private ToolStripMenuItem 删除所选要素ToolStripMenuItem;
+        private Label label1;
+        private ToolStripButton toolStripButton4;
     }
 }
