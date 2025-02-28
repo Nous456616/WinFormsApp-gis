@@ -15,30 +15,17 @@ namespace WinFormsApp1
 {
     public partial class Form1 : Form
     {
-        private IMapFeatureLayer editingLayer;
         private bool isAddingPoints = false;   // 是否处于添加点模式
         private bool isAddinglines = false;   // 是否处于添加线模式
         private Map map;
         private SaveFileDialog saveFileDialog = new SaveFileDialog();
-        private IMapLayer _selectedLayer;
-       
+        private IMapLayer? _selectedLayer;
+        private IMapFeatureLayer? editingLayer;
+
 
         public Form1()
         {
             InitializeComponent();
-            InitializeMap();
-            this.DoubleBuffered = true;
-        }
-
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
-        }
-
-        private void InitializeMap()
-        {
-
             map = new Map
             {
                 Dock = DockStyle.Fill
@@ -48,9 +35,14 @@ namespace WinFormsApp1
 
             // 设置地图的投影
             map.Projection = KnownCoordinateSystems.Projected.World.WebMercator;
+            this.DoubleBuffered = true;
         }
 
 
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
         private void 放大ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             map.FunctionMode = FunctionMode.ZoomIn;
