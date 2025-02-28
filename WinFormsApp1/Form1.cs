@@ -7,6 +7,8 @@ using System.Drawing;
 using NetTopologySuite.Geometries;
 using System;
 using System.Windows.Forms;
+using System.Data;
+using System.Linq;
 namespace WinFormsApp1
 {
     public partial class Form1 : Form
@@ -15,21 +17,25 @@ namespace WinFormsApp1
         private bool isAddingPoints = false;   // 是否处于添加点模式
         private Map map;
         private SaveFileDialog saveFileDialog = new SaveFileDialog();
-        
+        private IMapLayer _selectedLayer;
+        private Legend legend;//图层控件
+
         public Form1()
         {
             InitializeComponent();
             InitializeMap();
             this.DoubleBuffered = true;
         }
-       
-  
+
+
         private void Form1_Load(object sender, EventArgs e)
         {
 
         }
+
         private void InitializeMap()
         {
+
             map = new Map
             {
                 Dock = DockStyle.Fill
@@ -82,70 +88,25 @@ namespace WinFormsApp1
                     scheme.Categories.Add(new PolygonCategory(Color.Transparent, Color.Red, 1));
                     layer.Symbology = scheme;
                 }
-
+                UpdateLayerList();
                 map.ResetBuffer();
             }
         }
-        private ColorScheme CreateGrayscaleScheme(double min, double max)
-        {
-            ColorScheme scheme = new ColorScheme();
-            scheme.AddCategory(new ColorCategory(min, max, Color.Black, Color.White));
-            return scheme;
-        }
+
         private void tiffToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            OpenFileDialog dialog = new OpenFileDialog
+            using (var ofd = new OpenFileDialog())
             {
-                Filter = "TIFF文件 (*.tif;*.tiff)|*.tif;*.tiff"
-            };
-
-            if (dialog.ShowDialog() == DialogResult.OK)
-            {
-                try
+                ofd.Filter = "TIFF Files (*.tif)|*.tif";
+                if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    // 1. 加载栅格数据
-                    IRaster raster = Raster.Open(dialog.FileName);
-                    IMapRasterLayer layer = map.Layers.Add(raster);
-
-                    // 2. 计算统计信息（确保有最小值/最大值）
-                    if (double.IsNaN(raster.Minimum))
-                    {
-                        var raster = Raster.OpenFile(dialog.FileName);
-                        if (raster is Raster concreteRaster)
-                        {
-                            // 方法一：直接调用 Raster 类的计算方法
-                            concreteRaster.CalculateStatistics();
-
-                            // 方法二：使用进度条（可选）
-                            //ProgressMeter pm = new ProgressMeter();
-                            //concreteRaster.CalculateStatistics(pm);
-                        }
-                    }
-
-                    // 3. 创建灰度颜色方案（新API方式）
-                    RasterSymbolizer symbolizer = new RasterSymbolizer();
-
-                    // 方法一：直接设置渐变颜色
-                   // symbolizer.ColorScheme = ColorScheme.Grayscale; // 使用内置灰度方案
-                    //symbolizer.ColorSchemeType = ColorSchemeType.Gradient;
-
-                    // 方法二：自定义颜色范围（如果没有内置Grayscale）
-                    symbolizer.ColorScheme = CreateGrayscaleScheme(raster.Minimum, raster.Maximum);
-
-                    // 4. 应用符号化
-                    layer.Symbolizer = symbolizer;
-
-                    // 5. 缩放并刷新
-                  
-                    map.ResetBuffer();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"加载TIFF失败: {ex.Message}");
+                    var raster = ImageData.Open(ofd.FileName);
+                    map.Layers.Add(raster);
+                    UpdateLayerList();
+                    map.Refresh();
                 }
             }
 
-            
         }
 
         private void 平移ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -251,7 +212,64 @@ namespace WinFormsApp1
 
         private void 距离测量ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-           // MapFunctionMeasure measureDistance = new MapFunctionMeasure(map);
+            // MapFunctionMeasure measureDistance = new MapFunctionMeasure(map);
+        }
+
+        private void legend1_Click(object sender, EventArgs e)
+        {
+
+        }
+        // 更新图层列表
+        private void UpdateLayerList()
+        {
+            lstlayers.Items.Clear();
+            foreach (var layer in map.Layers.Reverse())
+            {
+                var item = new ListViewItem(layer.LegendText)
+                {
+                    Checked = layer.IsVisible,
+                    Tag = layer
+                };
+                lstlayers.Items.Add(item);
+            }
+        }
+
+        private void lstlayers_ItemChecked(object sender, ItemCheckedEventArgs e)
+        {
+            if (e.Item.Tag is IMapLayer layer)
+            {
+                layer.IsVisible = e.Item.Checked;
+                map.Refresh();
+            }
+
+        }
+
+
+        private void lstlayers_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (lstlayers.SelectedItems.Count > 0)
+            {
+                _selectedLayer = lstlayers.SelectedItems[0].Tag as IMapLayer;
+            }
+        }
+
+        private void map1_Load_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void 删除所选要素ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (_selectedLayer is IMapFeatureLayer featureLayer)
+            {
+                var features = featureLayer.Selection.ToFeatureList();
+                foreach (var feature in features)
+                {
+                    featureLayer.DataSet.Features.Remove(feature);
+                }
+                map.ResetBuffer();
+                map.Refresh();
+            }
         }
     }
 

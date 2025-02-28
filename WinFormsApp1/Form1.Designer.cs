@@ -45,11 +45,14 @@
             距离测量ToolStripMenuItem = new ToolStripMenuItem();
             关闭距离测量ToolStripMenuItem = new ToolStripMenuItem();
             添加点ToolStripMenuItem = new ToolStripMenuItem();
+            删除所选要素ToolStripMenuItem = new ToolStripMenuItem();
             toolStripDropDownButton2 = new ToolStripDropDownButton();
             缓冲区分析ToolStripMenuItem = new ToolStripMenuItem();
             toolStripButton1 = new ToolStripButton();
             toolStripButton2 = new ToolStripButton();
             toolStripButton3 = new ToolStripButton();
+            legend1 = new DotSpatial.Controls.Legend();
+            lstlayers = new ListView();
             toolStrip1.SuspendLayout();
             SuspendLayout();
             // 
@@ -134,7 +137,7 @@
             // 交互
             // 
             交互.DisplayStyle = ToolStripItemDisplayStyle.Text;
-            交互.DropDownItems.AddRange(new ToolStripItem[] { 距离测量ToolStripMenuItem, 关闭距离测量ToolStripMenuItem, 添加点ToolStripMenuItem });
+            交互.DropDownItems.AddRange(new ToolStripItem[] { 距离测量ToolStripMenuItem, 关闭距离测量ToolStripMenuItem, 添加点ToolStripMenuItem, 删除所选要素ToolStripMenuItem });
             交互.Image = (Image)resources.GetObject("交互.Image");
             交互.ImageTransparentColor = Color.Magenta;
             交互.Name = "交互";
@@ -144,22 +147,29 @@
             // 距离测量ToolStripMenuItem
             // 
             距离测量ToolStripMenuItem.Name = "距离测量ToolStripMenuItem";
-            距离测量ToolStripMenuItem.Size = new Size(180, 22);
+            距离测量ToolStripMenuItem.Size = new Size(148, 22);
             距离测量ToolStripMenuItem.Text = "距离测量";
             距离测量ToolStripMenuItem.Click += 距离测量ToolStripMenuItem_Click;
             // 
             // 关闭距离测量ToolStripMenuItem
             // 
             关闭距离测量ToolStripMenuItem.Name = "关闭距离测量ToolStripMenuItem";
-            关闭距离测量ToolStripMenuItem.Size = new Size(180, 22);
+            关闭距离测量ToolStripMenuItem.Size = new Size(148, 22);
             关闭距离测量ToolStripMenuItem.Text = "关闭距离测量";
             // 
             // 添加点ToolStripMenuItem
             // 
             添加点ToolStripMenuItem.Name = "添加点ToolStripMenuItem";
-            添加点ToolStripMenuItem.Size = new Size(180, 22);
+            添加点ToolStripMenuItem.Size = new Size(148, 22);
             添加点ToolStripMenuItem.Text = "添加点";
             添加点ToolStripMenuItem.Click += 添加点ToolStripMenuItem_Click;
+            // 
+            // 删除所选要素ToolStripMenuItem
+            // 
+            删除所选要素ToolStripMenuItem.Name = "删除所选要素ToolStripMenuItem";
+            删除所选要素ToolStripMenuItem.Size = new Size(180, 22);
+            删除所选要素ToolStripMenuItem.Text = "删除所选要素";
+            删除所选要素ToolStripMenuItem.Click += 删除所选要素ToolStripMenuItem_Click;
             // 
             // toolStripDropDownButton2
             // 
@@ -174,7 +184,7 @@
             // 缓冲区分析ToolStripMenuItem
             // 
             缓冲区分析ToolStripMenuItem.Name = "缓冲区分析ToolStripMenuItem";
-            缓冲区分析ToolStripMenuItem.Size = new Size(180, 22);
+            缓冲区分析ToolStripMenuItem.Size = new Size(136, 22);
             缓冲区分析ToolStripMenuItem.Text = "缓冲区分析";
             // 
             // toolStripButton1
@@ -207,11 +217,47 @@
             toolStripButton3.Text = "创建一个矢量图层";
             toolStripButton3.Click += toolStripButton3_Click;
             // 
+            // legend1
+            // 
+            legend1.BackColor = Color.White;
+            legend1.ControlRectangle = new Rectangle(0, 0, 187, 428);
+            legend1.DocumentRectangle = new Rectangle(0, 0, 187, 428);
+            legend1.HorizontalScrollEnabled = true;
+            legend1.Indentation = 30;
+            legend1.IsInitialized = false;
+            legend1.Location = new Point(0, 28);
+            legend1.MinimumSize = new Size(5, 5);
+            legend1.Name = "legend1";
+            legend1.ProgressHandler = null;
+            legend1.ResetOnResize = false;
+            legend1.SelectionFontColor = Color.Black;
+            legend1.SelectionHighlight = Color.FromArgb(215, 238, 252);
+            legend1.Size = new Size(187, 428);
+            legend1.TabIndex = 2;
+            legend1.Text = "legend1";
+            legend1.UseLegendForSelection = true;
+            legend1.VerticalScrollEnabled = true;
+            legend1.Click += legend1_Click;
+            // 
+            // lstlayers
+            // 
+            lstlayers.AutoArrange = false;
+            lstlayers.CheckBoxes = true;
+            lstlayers.Location = new Point(0, 28);
+            lstlayers.Name = "lstlayers";
+            lstlayers.Size = new Size(142, 265);
+            lstlayers.TabIndex = 3;
+            lstlayers.UseCompatibleStateImageBehavior = false;
+            lstlayers.ItemChecked += lstlayers_ItemChecked;
+            lstlayers.SelectedIndexChanged += lstlayers_SelectedIndexChanged;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(lstlayers);
+            Controls.Add(legend1);
             Controls.Add(toolStrip1);
             Name = "Form1";
             Text = "Form1";
@@ -242,5 +288,8 @@
         private ToolStripButton toolStripButton2;
         private ToolStripButton toolStripButton3;
         private ToolStripMenuItem 缓冲区分析ToolStripMenuItem;
+        private DotSpatial.Controls.Legend legend1;
+        private ListView lstlayers;
+        private ToolStripMenuItem 删除所选要素ToolStripMenuItem;
     }
 }
