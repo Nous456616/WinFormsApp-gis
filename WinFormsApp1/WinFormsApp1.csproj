@@ -15,6 +15,7 @@
     <PackageReference Include="DotSpatial.Projections" Version="4.0.656" />
     <PackageReference Include="DotSpatial.Symbology" Version="4.0.656" />
     <PackageReference Include="DotSpatial.Symbology.Forms" Version="4.0.656" />
+    <PackageReference Include="GDAL" Version="3.10.0" />
     <PackageReference Include="System.Drawing.Common" Version="9.0.2" />
   </ItemGroup>
 

@@ -1,4 +1,4 @@
-using DotSpatial.Controls;
+ï»¿using DotSpatial.Controls;
 using DotSpatial.Data;
 using DotSpatial.Symbology;
 using DotSpatial.Projections;
@@ -11,20 +11,25 @@ using System.Data;
 using System.Linq;
 using System.Security.Cryptography;
 using Microsoft.VisualBasic;
+using OSGeo.GDAL;
+using System.Text;
 namespace WinFormsApp1
 {
     public partial class Form1 : Form
     {
-        private bool isAddingPoints = false;   // ÊÇ·ñ´¦ÓÚÌí¼ÓµãÄ£Ê½
-        private bool isAddinglines = false;   // ÊÇ·ñ´¦ÓÚÌí¼ÓÏßÄ£Ê½
+        private bool isAddingPoints = false;   // æ˜¯å¦å¤„äºæ·»åŠ ç‚¹æ¨¡å¼
+        private bool isAddinglines = false;   // æ˜¯å¦å¤„äºæ·»åŠ çº¿æ¨¡å¼
         private Map map;
         private SaveFileDialog saveFileDialog = new SaveFileDialog();
         private IMapLayer? _selectedLayer;
         private IMapFeatureLayer? editingLayer;
+        private PictureBox pictureBox1;
+        private static bool _gdalInitialized = false;
 
-
+       
         public Form1()
         {
+            pictureBox1 = new PictureBox();
             InitializeComponent();
             map = new Map
             {
@@ -33,31 +38,44 @@ namespace WinFormsApp1
             this.Controls.Add(map);
             map.MouseClick += Map_MouseClick;
 
-            // ÉèÖÃµØÍ¼µÄÍ¶Ó°
+            // è®¾ç½®åœ°å›¾çš„æŠ•å½±
             map.Projection = KnownCoordinateSystems.Projected.World.WebMercator;
             this.DoubleBuffered = true;
         }
+        private void InitializeGdalEnvironment()
+        {
+          if (!_gdalInitialized)
+             {
+                        // æ³¨å†Œæ‰€æœ‰é©±åŠ¨
+             Gdal.AllRegister();
 
+                        // é…ç½®ä¸­æ–‡è·¯å¾„æ”¯æŒ
+             Gdal.SetConfigOption("GDAL_FILENAME_IS_UTF8", "YES");
+
+                        // æ ‡è®°å·²åˆå§‹åŒ–
+              _gdalInitialized = true;
+          }
+         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
 
         }
-        private void ·Å´óToolStripMenuItem_Click(object sender, EventArgs e)
+        private void æ”¾å¤§ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             map.FunctionMode = FunctionMode.ZoomIn;
         }
 
-        private void ËõĞ¡ToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ç¼©å°ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             map.FunctionMode = FunctionMode.ZoomOut;
         }
 
-        private void È«¾°ToolStripMenuItem_Click(object sender, EventArgs e)
+        private void å…¨æ™¯ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             map.ZoomToMaxExtent();
         }
-        private void Ñ¡ÔñToolStripMenuItem_Click(object sender, EventArgs e)
+        private void é€‰æ‹©ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             map.FunctionMode = FunctionMode.Select;
         }
@@ -76,7 +94,7 @@ namespace WinFormsApp1
                 IFeatureSet featureSet = FeatureSet.OpenFile(dialog.FileName);
                 IMapFeatureLayer layer = map.Layers.Add(featureSet);
 
-                // ÉèÖÃ·ûºÅÑùÊ½£¨Ê¾Àı£ººìÉ«±ß¿ò¶à±ßĞÎ£©
+                // è®¾ç½®ç¬¦å·æ ·å¼ï¼ˆç¤ºä¾‹ï¼šçº¢è‰²è¾¹æ¡†å¤šè¾¹å½¢ï¼‰
                 if (featureSet.FeatureType == FeatureType.Polygon)
                 {
                     PolygonScheme scheme = new PolygonScheme();
@@ -88,40 +106,89 @@ namespace WinFormsApp1
             }
         }
 
-        private void tiffToolStripMenuItem_Click(object sender, EventArgs e)//tifÎÄ¼ş
+        private void tiffToolStripMenuItem_Click(object sender, EventArgs e)//tifæ–‡ä»¶
         {
-            using(OpenFileDialog ofd = new OpenFileDialog())
-        {
-                ofd.Filter = "TIFF Files (*.tif;*.tiff)|*.tif;*.tiff";
-                ofd.Title = "Ñ¡ÔñÕ¤¸ñÎÄ¼ş";
+            using (var openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.Filter = "GeoTIFF Files (*.tif;*.tiff)|*.tif;*.tiff|All Files (*.*)|*.*";
 
-                if (ofd.ShowDialog() == DialogResult.OK)
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
+                    Dataset dataset = null;
                     try
                     {
-                        // Ê¹ÓÃRaster.Open¶ÁÈ¡µØÀí²Î¿¼Êı¾İ£¨ÍÆ¼ö·½Ê½£©
-                        IRaster raster = Raster.Open(ofd.FileName);
+                        // åˆå§‹åŒ–GDALç¯å¢ƒ
+                        InitializeGdalEnvironment();
 
-                        // Ìí¼ÓÕ¤¸ñÍ¼²ãµ½µØÍ¼
-                        map.Layers.Add(raster);
+                        string filePath = openFileDialog.FileName;
+                        dataset = Gdal.Open(filePath, Access.GA_ReadOnly);
 
-                        // ×Ô¶¯Ëõ·ÅÖÁÍ¼²ã·¶Î§
-                        map.ZoomToMaxExtent();
+                        if (dataset == null)
+                        {
+                            string errorMsg = Gdal.GetLastErrorMsg();
+                            MessageBox.Show($"æ–‡ä»¶æ‰“å¼€å¤±è´¥ï¼š{errorMsg}", "é”™è¯¯",
+                                          MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
 
-                        // ¸üĞÂÍ¼²ãÁĞ±í
-                        UpdateLayerList();
-
-                        MessageBox.Show("TIFF¼ÓÔØ³É¹¦");
+                        // æ˜¾ç¤ºæ …æ ¼å…ƒæ•°æ®
+                        ShowRasterInfo(dataset);
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show($"¼ÓÔØÊ§°Ü: {ex.Message}");
+                        HandleGdalError(ex);
+                    }
+                    finally
+                    {
+                        // é‡Šæ”¾èµ„æº
+                        dataset?.Dispose();
+                        GC.Collect(); // GDALä¾èµ–GCæ¸…ç†éæ‰˜ç®¡èµ„æº
                     }
                 }
             }
         }
+        private void ShowRasterInfo(Dataset dataset)
+        {
+            var info = new StringBuilder();
+            info.AppendLine("â–¸ æ–‡ä»¶åŸºæœ¬ä¿¡æ¯");
+            info.AppendLine($"æ³¢æ®µæ•°ï¼š{dataset.RasterCount}");
+            info.AppendLine($"å½±åƒå°ºå¯¸ï¼š{dataset.RasterXSize} x {dataset.RasterYSize}");
 
-        private void Æ½ÒÆToolStripMenuItem_Click(object sender, EventArgs e)
+            // è·å–åœ°ç†å˜æ¢å‚æ•°
+            double[] transform = new double[6];
+            dataset.GetGeoTransform(transform);
+            info.AppendLine($"\nâ–¸ åœ°ç†å‚è€ƒ");
+            info.AppendLine($"å·¦ä¸Šè§’Xï¼š{transform[0]}");
+            info.AppendLine($"æ°´å¹³åˆ†è¾¨ç‡ï¼š{transform[1]}");
+            info.AppendLine($"æ—‹è½¬å‚æ•°ï¼š{transform[2]}");
+            info.AppendLine($"å·¦ä¸Šè§’Yï¼š{transform[3]}");
+            info.AppendLine($"å‚ç›´åˆ†è¾¨ç‡ï¼š{transform[5]}");
+
+            // æ˜¾ç¤ºä¿¡æ¯
+            MessageBox.Show(info.ToString(), "æ …æ ¼ä¿¡æ¯",
+                           MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+        private void HandleGdalError(Exception ex)
+        {
+            var errorMsg = new StringBuilder();
+            errorMsg.AppendLine("é”™è¯¯ç±»å‹ï¼š" + ex.GetType().Name);
+            errorMsg.AppendLine("è¯¦ç»†ä¿¡æ¯ï¼š" + ex.Message);
+
+            // æ•è·GDALç‰¹å®šé”™è¯¯
+            if (ex is DllNotFoundException)
+            {
+                errorMsg.AppendLine("\nå¯èƒ½åŸå› ï¼š");
+                errorMsg.AppendLine("1. GDALè¿è¡Œæ—¶åº“æœªæ­£ç¡®å®‰è£…");
+                errorMsg.AppendLine("2. ç¼ºå°‘ gdal_wrap.dll æˆ– gdal_csharp.dll");
+            }
+
+            MessageBox.Show(errorMsg.ToString(), "ç³»ç»Ÿé”™è¯¯",
+                           MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+
+
+        private void å¹³ç§»ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             map.FunctionMode = FunctionMode.Pan;
         }
@@ -129,32 +196,32 @@ namespace WinFormsApp1
         {
             editingLayer = layer;
 
-            map.FunctionMode = FunctionMode.Select; // ÇĞ»»µ½Ñ¡ÔñÄ£Ê½
+            map.FunctionMode = FunctionMode.Select; // åˆ‡æ¢åˆ°é€‰æ‹©æ¨¡å¼
         }
-        private void Map_MouseClick(object sender, MouseEventArgs e)//Ìí¼Óµã
+        private void Map_MouseClick(object sender, MouseEventArgs e)//æ·»åŠ ç‚¹
         {
             if (!isAddingPoints || editingLayer == null) return;
 
             if (e.Button == MouseButtons.Left)
             {
-                // ½«µã»÷Î»ÖÃ×ª»»ÎªµØÍ¼×ø±ê
+                // å°†ç‚¹å‡»ä½ç½®è½¬æ¢ä¸ºåœ°å›¾åæ ‡
                 Coordinate coord = map.PixelToProj(e.Location);
 
-                // Ê¹ÓÃ NetTopologySuite.Geometries.Point
+                // ä½¿ç”¨ NetTopologySuite.Geometries.Point
                 NetTopologySuite.Geometries.Point point = new NetTopologySuite.Geometries.Point(coord.X, coord.Y);
 
-                // ½«µãÌí¼Óµ½Í¼²ã
+                // å°†ç‚¹æ·»åŠ åˆ°å›¾å±‚
                 IFeature feature = editingLayer.DataSet.AddFeature(point);
 
-                // ÉèÖÃµãµÄÏÔÊ¾ÑùÊ½£¨ºìÉ«Ô²ĞÎ£¬´óĞ¡8ÏñËØ£©
+                // è®¾ç½®ç‚¹çš„æ˜¾ç¤ºæ ·å¼ï¼ˆçº¢è‰²åœ†å½¢ï¼Œå¤§å°8åƒç´ ï¼‰
                 if (editingLayer.Symbology == null)
                 {
-                    // Ê¹ÓÃ DotSpatial.Symbology.PointShape
+                    // ä½¿ç”¨ DotSpatial.Symbology.PointShape
                     var symbolizer = new PointSymbolizer(Color.Red, DotSpatial.Symbology.PointShape.Ellipse, 8);
                     editingLayer.Symbology = new PointScheme { Categories = { new PointCategory(symbolizer) } };
                 }
 
-                map.ResetBuffer(); // Ë¢ĞÂµØÍ¼
+                map.ResetBuffer(); // åˆ·æ–°åœ°å›¾
             }
             else if (e.Button == MouseButtons.Right)
             {
@@ -162,26 +229,26 @@ namespace WinFormsApp1
                 map.Cursor = Cursors.Default;
             }
         }
-        private void Map_MouseChick_1(object sender, MouseEventArgs e)//Ìí¼ÓÏß
+        private void Map_MouseChick_1(object sender, MouseEventArgs e)//æ·»åŠ çº¿
         {
             if (!isAddinglines || editingLayer == null) return;
             if (e.Button == MouseButtons.Left)
             {
-                // ½«µã»÷Î»ÖÃ×ª»»ÎªµØÍ¼×ø±ê
+                // å°†ç‚¹å‡»ä½ç½®è½¬æ¢ä¸ºåœ°å›¾åæ ‡
                 Coordinate coord = map.PixelToProj(e.Location);
-                // Ê¹ÓÃ NetTopologySuite.Geometries.Point
+                // ä½¿ç”¨ NetTopologySuite.Geometries.Point
                 NetTopologySuite.Geometries.Point point = new NetTopologySuite.Geometries.Point(coord.X, coord.Y);
                 
-                // ½«µãÌí¼Óµ½Í¼²ã
+                // å°†ç‚¹æ·»åŠ åˆ°å›¾å±‚
                 IFeature feature = editingLayer.DataSet.AddFeature(point);
-                // ÉèÖÃµãµÄÏÔÊ¾ÑùÊ½£¨ºìÉ«Ô²ĞÎ£¬´óĞ¡8ÏñËØ£©
+                // è®¾ç½®ç‚¹çš„æ˜¾ç¤ºæ ·å¼ï¼ˆçº¢è‰²åœ†å½¢ï¼Œå¤§å°8åƒç´ ï¼‰
                 if (editingLayer.Symbology == null)
                 {
-                    // Ê¹ÓÃ DotSpatial.Symbology.PointShape
+                    // ä½¿ç”¨ DotSpatial.Symbology.PointShape
                     var symbolizer = new PointSymbolizer(Color.Red, DotSpatial.Symbology.PointShape.Ellipse, 8);
                     editingLayer.Symbology = new PointScheme { Categories = { new PointCategory(symbolizer) } };
                 }
-                map.ResetBuffer(); // Ë¢ĞÂµØÍ¼
+                map.ResetBuffer(); // åˆ·æ–°åœ°å›¾
             }
             else if (e.Button == MouseButtons.Right)
             {
@@ -191,29 +258,29 @@ namespace WinFormsApp1
         }
         private void LoadOrCreatePointLayer()
         {
-            // ´´½¨Ò»¸öĞÂµÄµãÍ¼²ã
+            // åˆ›å»ºä¸€ä¸ªæ–°çš„ç‚¹å›¾å±‚
             FeatureSet featureSet = new FeatureSet(FeatureType.Point);
             featureSet.Projection = map.Projection;
 
-            // ¶¨ÒåÊôĞÔ×Ö¶Î£¨Ê¾Àı£ºÃû³Æ¡¢ID£©
+            // å®šä¹‰å±æ€§å­—æ®µï¼ˆç¤ºä¾‹ï¼šåç§°ã€IDï¼‰
             featureSet.DataTable.Columns.Add("Name", typeof(string));
             featureSet.DataTable.Columns.Add("ID", typeof(int));
 
-            // Ìí¼Óµ½µØÍ¼²¢¿ªÊ¼±à¼­
+            // æ·»åŠ åˆ°åœ°å›¾å¹¶å¼€å§‹ç¼–è¾‘
             editingLayer = map.Layers.Add(featureSet);
             //editingLayer.DataSet.StartEditing();
         }
-        private void Ìí¼ÓµãToolStripMenuItem_Click(object sender, EventArgs e)
+        private void æ·»åŠ ç‚¹ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (editingLayer == null)
             {
-                MessageBox.Show("ÇëÏÈ¼ÓÔØ»ò´´½¨Ò»¸ö¿É±à¼­µÄÊ¸Á¿Í¼²ã£¡");
+                MessageBox.Show("è¯·å…ˆåŠ è½½æˆ–åˆ›å»ºä¸€ä¸ªå¯ç¼–è¾‘çš„çŸ¢é‡å›¾å±‚ï¼");
                 return;
             }
 
             isAddingPoints = true;
-            map.Cursor = Cursors.Cross; // Êó±ê±äÎªÊ®×Ö×¼ĞÇ
-            MessageBox.Show("µã»÷µØÍ¼Ìí¼Óµã£¬ÓÒ¼üÍË³öÌí¼ÓÄ£Ê½¡£");
+            map.Cursor = Cursors.Cross; // é¼ æ ‡å˜ä¸ºåå­—å‡†æ˜Ÿ
+            MessageBox.Show("ç‚¹å‡»åœ°å›¾æ·»åŠ ç‚¹ï¼Œå³é”®é€€å‡ºæ·»åŠ æ¨¡å¼ã€‚");
 
         }
         private void SaveEdits()
@@ -224,36 +291,36 @@ namespace WinFormsApp1
             if (saveFileDialog.ShowDialog() == DialogResult.OK)
             {
                 editingLayer.DataSet.SaveAs(saveFileDialog.FileName, true);
-                //editingLayer.DataSet.(true); // ±£´æ²¢½áÊø±à¼­
+                //editingLayer.DataSet.(true); // ä¿å­˜å¹¶ç»“æŸç¼–è¾‘
                 // if (editingLayer is IEditableLayer editableLayer)
                 // {
                 //   editableLayer.EndEdit();
                 // }
 
-                MessageBox.Show("±£´æ³É¹¦£¡");
+                MessageBox.Show("ä¿å­˜æˆåŠŸï¼");
             }
         }
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
-            StartEditing(editingLayer);//¿ªÊ¼±à¼­
+            StartEditing(editingLayer);//å¼€å§‹ç¼–è¾‘
         }
 
         private void toolStripButton2_Click(object sender, EventArgs e)
         {
-            SaveEdits();//±£³Ö±à¼­
+            SaveEdits();//ä¿æŒç¼–è¾‘
         }
 
         private void toolStripButton3_Click(object sender, EventArgs e)
         {
             base.OnLoad(e);
             LoadOrCreatePointLayer();
-            UpdateLayerList();//´´½¨Ê¸Á¿Í¼²ã
+            UpdateLayerList();//åˆ›å»ºçŸ¢é‡å›¾å±‚
         }
         private void legend1_Click(object sender, EventArgs e)
         {
 
         }
-        // ¸üĞÂÍ¼²ãÁĞ±í
+        // æ›´æ–°å›¾å±‚åˆ—è¡¨
         private void UpdateLayerList()
         {
             lstlayers.Items.Clear();
@@ -285,7 +352,7 @@ namespace WinFormsApp1
             }
         }
 
-        private void É¾³ıËùÑ¡ÒªËØToolStripMenuItem_Click(object sender, EventArgs e)
+        private void åˆ é™¤æ‰€é€‰è¦ç´ ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (_selectedLayer is IMapFeatureLayer featureLayer)
             {
@@ -313,28 +380,28 @@ namespace WinFormsApp1
             }
         }
 
-        private void »º³åÇø·ÖÎöToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ç¼“å†²åŒºåˆ†æToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (map.Layers.Count == 0)
             {
-                MessageBox.Show("ÇëÏÈ¼ÓÔØÒ»¸öshpÎÄ¼ş¡£");
+                MessageBox.Show("è¯·å…ˆåŠ è½½ä¸€ä¸ªshpæ–‡ä»¶ã€‚");
                 return;
             }
 
             IFeatureLayer lineLayer = map.Layers[0] as IFeatureLayer;
             if (lineLayer == null)
             {
-                MessageBox.Show("ÎŞĞ§µÄÍ¼²ã¡£");
+                MessageBox.Show("æ— æ•ˆçš„å›¾å±‚ã€‚");
                 return;
             }
-            string s = Interaction.InputBox("ÉèÖÃ»º³åÇø¾àÀë", "»º³åÇø¾àÀë", "10.0", -1, -1);
+            string s = Interaction.InputBox("è®¾ç½®ç¼“å†²åŒºè·ç¦»", "ç¼“å†²åŒºè·ç¦»", "10.0", -1, -1);
             double bufferDistance;
             try
             {
                 bufferDistance = Double.Parse(s);
             }
             catch (FormatException)
-            { MessageBox.Show("ÎŞĞ§µÄ¾àÀë"); return; }
+            { MessageBox.Show("æ— æ•ˆçš„è·ç¦»"); return; }
             IFeatureSet bufferFeatureSet = lineLayer.DataSet.Buffer(bufferDistance, true);
             MapPolygonLayer bufferLayer = new MapPolygonLayer(bufferFeatureSet)
             {
@@ -342,13 +409,14 @@ namespace WinFormsApp1
             };
             map.Layers.Add(bufferLayer);
             map.ZoomToMaxExtent();
+            UpdateLayerList();
         }
 
-        private void Ìí¼ÓToolStripMenuItem_Click(object sender, EventArgs e)
+        private void æ·»åŠ ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (editingLayer == null)
             {
-                MessageBox.Show("ÇëÏÈ¼ÓÔØ»ò´´½¨Ò»¸ö¿É±à¼­µÄÊ¸Á¿Í¼²ã£¡");
+                MessageBox.Show("è¯·å…ˆåŠ è½½æˆ–åˆ›å»ºä¸€ä¸ªå¯ç¼–è¾‘çš„çŸ¢é‡å›¾å±‚ï¼");
                 return;
             }
         }
